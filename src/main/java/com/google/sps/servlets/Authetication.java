@@ -39,7 +39,7 @@ public class LoginStatus extends HttpServlet {
     } else {
       String urlToRedirectToAfterUserLogsIn = "/";
       String loginUrl = userService.createLoginURL(urlToRedirectToAfterUserLogsIn);
-      response.getWriter().println("{\"LoginStatus\" : false" + ", \"logoutUrl\" : \"" + logoutUrl + "\"}");
+      response.getWriter().println("{\"LoginStatus\" : false" + ", \"loginUrl\" : \"" + loginUrl + "\"}");
     }
   }
 }
