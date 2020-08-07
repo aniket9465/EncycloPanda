@@ -22,9 +22,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+//Authenticates user to leave a comment
 @WebServlet("/authentication")
 public class LoginStatus extends HttpServlet {
 
+  //Generates a logIn URL if logged out(to leave a comment) and logOut URL if logged in
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     response.setContentType("application/json");
