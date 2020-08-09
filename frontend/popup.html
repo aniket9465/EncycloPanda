@@ -3,47 +3,21 @@
   <head>
     <title>EncycloPanda</title>
     <link rel="stylesheet" href="popup.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   </head>
   <body>
     <div id="container">
       <div id="header">
-        <div class="filterButton" id="selected">
+        <div class="filterButton" id="mostRecentDiv">
           <p class="filterText">Most Recent</p>
         </div>
         <div id="divider"></div>
-        <div class="filterButton" id="selected">
+        <div class="filterButton" id="mostLikedDiv">
           <p class="filterText">Most Liked</p>
         </div>
       </div>
-      <div id="content">
-        <div class="card">
-          <div class="cardHeader">
-            <p class="username">aniket9465</p>
-            <p class="date">12-6-2020 20:23</p>
-          </div>
-          <div class="cardContent">
-            <p class="cardText">Try to google "Do a barrel roll"</p>
-          </div>
-          <div class="cardFooter">
-            <img src="images/likeButton.png" class="likeButton" />
-            <p class="likesText">15 likes</p>
-          </div>
-        </div>
-      </div>
-      <div id="footer">
-        <form id="commentForm">
-          <textarea
-            type="text"
-            id="commentBox"
-            name="commentText"
-            placeholder="Tell Panda Something about this website"
-          ></textarea>
-          <img src="images/paw.png" id="submitButton" />
-        </form>
-        <div id="loginButton">
-          <p id="loginText">Login</p>
-        </div>
-      </div>
+      <div id="content"></div>
+      <div id="footer"></div>
     </div>
     <script src="popup.js"></script>
   </body>

@@ -34,10 +34,15 @@ body {
 .filterButton {
   flex: 1;
   align-items: center;
+  cursor: pointer;
   display: flex;
   justify-content: center;
   height: 80%;
   widows: 90%;
+  border: #fff;
+  border-style: solid;
+  border-radius: 10px;
+  border-width: 2px;
 }
 .filterText {
   margin: 0;
@@ -45,12 +50,6 @@ body {
   font-weight: 100;
   font-size: 20px;
   color: #fff;
-}
-#selected {
-  border: #fff;
-  border-style: solid;
-  border-radius: 10px;
-  border-width: 2px;
 }
 #divider {
   margin: 2px;
@@ -95,6 +94,7 @@ body {
   font-size: 20px;
 }
 .likeButton {
+  cursor: pointer;
   height: 20px;
 }
 .likesText {
@@ -108,7 +108,6 @@ body {
   display: flex;
   align-items: center;
   height: 100%;
-  display: none;
   width: 100%;
   flex-direction: row;
 }
