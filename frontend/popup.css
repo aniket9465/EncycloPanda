@@ -1,0 +1,142 @@
+body {
+  padding: 0;
+  margin: 0;
+}
+#container {
+  margin: 0;
+  width: 400px;
+  display: flex;
+  flex-direction: column;
+  height: 500px;
+  background-color: #393939;
+}
+#header {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  height: 50px;
+}
+#content {
+  width: 100%;
+  height: auto;
+  flex-grow: 1;
+  overflow-y: scroll;
+}
+::-webkit-scrollbar {
+  display: none;
+}
+#footer {
+  width: 100%;
+  height: 75px;
+}
+.filterButton {
+  flex: 1;
+  align-items: center;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  height: 80%;
+  widows: 90%;
+  border: #fff;
+  border-style: solid;
+  border-radius: 10px;
+  border-width: 2px;
+}
+.filterText {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 100;
+  font-size: 20px;
+  color: #fff;
+}
+#divider {
+  margin: 2px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  border-left: 2px solid #fff;
+  height: 30px;
+}
+.card {
+  background-color: #fff;
+  border-radius: 10px;
+  margin: 2px;
+  flex-direction: column;
+  display: flex;
+  min-height: 100px;
+  padding: 12px;
+}
+.cardHeader {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  height: 20px;
+}
+.cardContent {
+  width: 100%;
+  flex-grow: 1;
+}
+.cardFooter {
+  width: 100%;
+  height: 30px;
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+}
+.username {
+}
+.date {
+}
+.cardText {
+  font-size: 20px;
+}
+.likeButton {
+  cursor: pointer;
+  height: 20px;
+}
+.likesText {
+  padding: 0;
+  margin: 0;
+  margin-top: 4px;
+  color: #696969;
+  margin-left: 4px;
+}
+#commentForm {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  flex-direction: row;
+}
+#commentBox {
+  height: 60%;
+  padding: 8px;
+  margin: 4px;
+  border-radius: 10px;
+  flex-grow: 1;
+}
+#submitButton {
+  width: 50px;
+  height: 50px;
+  padding: 4px;
+}
+#loginButton {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+}
+#loginText {
+  padding: 10px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: bold;
+  width: 40%;
+  display: flex;
+  justify-content: center;
+  background-color: #fff;
+  border-radius: 20px;
+}
