@@ -5,6 +5,9 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.SortDirection;
+import com.google.appengine.api.datastore.Query.FilterPredicate;
+import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
 import com.google.appengine.api.datastore.Query.SortDirection;
@@ -20,12 +23,14 @@ import javax.servlet.http.HttpServletResponse;
 
 /** Servlet responsible for get(all comments), post */
 @WebServlet("/comment")
-public class DataServlet extends HttpServlet {
+public class CommentServlet extends HttpServlet {
 
   @Override
   /** Get all comments from datastore and sort it in descending order of time posted */
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    Query query = new Query("Comment").addSort("createdAt", SortDirection.DESCENDING);
+    Query query = new Query("Comment")
+                            .setFilter(new FilterPredicate("websiteURL", FilterOperator.EQUAL, request.getParameter("websiteURL")))
+                            .addSort("createdAt", SortDirection.DESCENDING);
 
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     PreparedQuery results = datastore.prepare(query);
@@ -37,10 +42,10 @@ public class DataServlet extends HttpServlet {
       long likes = (long) entity.getProperty("likes");
       long createdAt = (long) entity.getProperty("createdAt");
       String userId = (String) entity.getProperty("userId");
-      String comment = (String) entity.getProperty("comment");
+      String text = (String) entity.getProperty("comment");
       String websiteURL = (String) entity.getProperty("websiteURL");
       
-      Comment comment = new Comment(id, likes, createdAt, userId, comment, websiteURL);
+      Comment comment = new Comment(id, likes, createdAt, userId, text, websiteURL);
       comments.add(comment);
     }
 
