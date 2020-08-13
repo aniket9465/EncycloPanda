@@ -24,7 +24,7 @@ import javax.servlet.http.HttpServletResponse;
 
 //Authenticates user to leave a comment
 @WebServlet("/authentication")
-public class LoginStatus extends HttpServlet {
+public class Authetication extends HttpServlet {
 
   //Generates a logIn URL if logged out(to leave a comment) and logOut URL if logged in
   @Override

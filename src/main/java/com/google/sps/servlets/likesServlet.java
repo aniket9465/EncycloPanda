@@ -21,12 +21,18 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.CompositeFilter;
+import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
+import com.google.appengine.api.datastore.Query.FilterPredicate;
+import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.SortDirection;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.google.gson.Gson;
 import com.google.sps.data.Comment;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Arrays;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -34,76 +40,60 @@ import javax.servlet.http.HttpServletResponse;
 
 /** Manages number of likes for a comment from a user */
 @WebServlet("/likes")
-public class DataServlet extends HttpServlet {
+public class likesServlet extends HttpServlet {
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    /** If user is not logged in redirect to authentication */
-    UserService userService = UserServiceFactory.getUserService();
+	/** If user is not logged in redirect to authentication */
+	UserService userService = UserServiceFactory.getUserService();
     if (!userService.isUserLoggedIn()) {
       response.sendRedirect("/authentication");
       return;
     }
-	  
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+	DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 	
-    String userIdLike = userService.getCurrentUser().getUserId();
-    long postIdLike = request.getParameter("postId");
+	String userIdLike = userService.getCurrentUser().getUserId();
+	long postIdLike = Long.valueOf(request.getParameter("postId"));
 	
-    Entity likesEntity = new Entity("Likes");
+	Entity likesEntity = new Entity("Likes");
     likesEntity.setProperty("userId", userIdLike);
     likesEntity.setProperty("postId", postIdLike);
 	
-    bool sameEntry = false;
+	boolean sameEntry = false;
 
-    /** Check for same entry and then add to datastore*/
-    try{
-      Query<Entity> queryLike = Query.newEntityQueryBuilder()
-       		         .setKind("Likes")
-		         .setFilter(PropertyFilter.eq("userId", userIdLike), PropertyFilter.eq("postId", postIdLike))
-		         .build();
+	/** Check for same entry and then add to datastore*/
+	try{
+	  Query queryLike = new Query("Likes")
+		         .setFilter(new CompositeFilter(CompositeFilterOperator.AND, Arrays.asList(
+     						new FilterPredicate("userId", FilterOperator.EQUAL, userIdLike),
+     						new FilterPredicate("postId", FilterOperator.EQUAL, postIdLike))));
 	
-      if(queryLike!=NULL){
-        sameEntry = true;
-      }
-      else{
-	datastore.put(likesEntity);
-      }
-    }
-    catch(Exception e){
-      response.getWriter().println("Error while querying Likes entity : " + e);	
-    }
-
-    try{
-      Query queryComment = new Query("Comment");
-      PreparedQuery resultsComments = datastore.prepare(queryComment);
-	
-      /** Increase the number of likes for a comment by a user for the first time and update in datastore */
-      for (Entity entity : resultsComments.asIterable()) {
-        long id = entity.getKey().getId();
-	long likes = (long) entity.getProperty("likes");
-	String userIdComment = (String) entity.getProperty("userId");
-	if(id==postIdLike && !sameEntry){
-	  likes = likes + 1;  
+	  if(queryLike!=null){
+		  sameEntry = true;
+	  }
+	  else{
+		  datastore.put(likesEntity);
+	  }
 	}
-	long createdAt = (long) entity.getProperty("createdAt");
-        String comment = (String) entity.getProperty("comment");
-        String websiteURL = (String) entity.getProperty("websiteURL");
-	  
-	Entity commentEntity = new Entity("Comment", id);
-        commentEntity.setProperty("comment", comment);
-        commentEntity.setProperty("createdAt", createdAt);
-        commentEntity.setProperty("userId", userIdComment);
-        commentEntity.setProperty("likes", likes);
-        commentEntity.setProperty("websiteURL", websiteURL);
-	  
-	datastore.put(commentEntity);
+	catch(Exception e){
+	  response.getWriter().println("Error while querying Likes entity : " + e);	
+	}
+
+	try{
+	  /** Updating likes of a comment*/	
+	  Entity commentEntity = datastore.get(KeyFactory.createKey("Comment", postIdLike));
+	  if(!sameEntry){
+	  	long likes = (long) commentEntity.getProperty("likes");
+        commentEntity.setProperty("likes", likes + 1);
+        datastore.put(commentEntity);
       }
-    }
-    catch(Exception e){
-      response.getWriter().println("Error while querying Comments entity : " + e);
-    }
-	  
-    response.sendRedirect("/comment");
+
+      
+	}
+	catch(Exception e){
+	  response.getWriter().println("Error while querying Comments entity : " + e);
+	}
+
+	response.sendRedirect("/comment");
   }
 }
