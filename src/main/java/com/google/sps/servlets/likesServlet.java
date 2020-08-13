@@ -53,22 +53,16 @@ public class DataServlet extends HttpServlet {
     likesEntity.setProperty("userId", userId_like);
     likesEntity.setProperty("postId", postId_like);
 	
-    Query query_likes = new Query("Likes");
-    PreparedQuery results_likes = datastore.prepare(query_likes);
-	
-    /** Check for multiple likes by a user for the same comment */
     bool same_entry = false;
-    for (Entity entity : results_likes.asIterable()) {
-      String userId = (String) entity.getProperty("userId");
-      long postId = (long) entity.getProperty("postId");
-      if(userId==userId_like && postId==postId_like){
-        same_entry = true;
-	break;
-      }
-    }
-    if(!same_entry){
+
+    /** Check for same entry and then add to datastore*/
+    Query<Entity> query_likes = Query.newEntityQueryBuilder().setKind("Likes").setFilter(PropertyFilter.eq("userId", userId_like), PropertyFilter.eq("postId", postId_like)).build();
+	
+    if(query_likes!=NULL)
+      same_entry = true;
+    else
       datastore.put(likesEntity);
-    }
+
 	
     Query query_comment = new Query("Comment");
     PreparedQuery results_comments = datastore.prepare(query_comment);
@@ -78,7 +72,7 @@ public class DataServlet extends HttpServlet {
       long id = entity.getKey().getId();
       long likes = (long) entity.getProperty("likes");
       String userId_comment = (String) entity.getProperty("userId");
-      if(id==postId_like && userId_comment==userId_like && !same_entry)
+      if(id==postId_like && !same_entry)
         likes = likes + 1;  
       long createdAt = (long) entity.getProperty("createdAt");
       String comment = (String) entity.getProperty("comment");
