@@ -50,6 +50,9 @@ public class likesServlet extends HttpServlet {
       response.sendRedirect("/authentication");
       return;
     }
+    response.setContentType("text/html");
+    response.setCharacterEncoding("UTF-8");
+    
 	DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 	
 	String userIdLike = userService.getCurrentUser().getUserId();
@@ -86,14 +89,11 @@ public class likesServlet extends HttpServlet {
 	  	long likes = (long) commentEntity.getProperty("likes");
         commentEntity.setProperty("likes", likes + 1);
         datastore.put(commentEntity);
+        response.getWriter().println(likes);
       }
-
-      
 	}
 	catch(Exception e){
 	  response.getWriter().println("Error while querying Comments entity : " + e);
 	}
-
-	response.sendRedirect("/comment");
   }
 }
