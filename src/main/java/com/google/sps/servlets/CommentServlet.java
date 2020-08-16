@@ -28,9 +28,17 @@ public class CommentServlet extends HttpServlet {
   @Override
   /** Get all comments from datastore and sort it in descending order of time posted */
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    Query query = new Query("Comment")
+    Query query;
+    if(request.getParameter("type")=="likes"){
+        query = new Query("Comment")
                             .setFilter(new FilterPredicate("websiteURL", FilterOperator.EQUAL, request.getParameter("websiteURL")))
-                            .addSort("createdAt", SortDirection.DESCENDING);
+                            .addSort("likes", SortDirection.DESCENDING);
+    }
+    else{
+       query = new Query("Comment")
+                            .setFilter(new FilterPredicate("websiteURL", FilterOperator.EQUAL, request.getParameter("websiteURL")))
+                            .addSort("createdAt", SortDirection.DESCENDING); 
+    }
 
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     PreparedQuery results = datastore.prepare(query);
@@ -78,6 +86,9 @@ public class CommentServlet extends HttpServlet {
     DatastoreService datastoreService = DatastoreServiceFactory.getDatastoreService();
     datastoreService.put(commentEntity);
 
-    response.sendRedirect("/comment");
+    Gson gson = new Gson();
+
+    response.setContentType("application/json;");
+    response.getWriter().println(gson.toJson(commentEntity));
   }
 }
