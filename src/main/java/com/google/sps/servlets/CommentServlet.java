@@ -29,10 +29,11 @@ public class CommentServlet extends HttpServlet {
   /** Get all comments from datastore and sort it in descending order of time posted */
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     Query query;
-    if(request.getParameter("type")!=null){
+    if(request.getParameter("type")!=null && request.getParameter("type").equals("likes")){
         query = new Query("Comment")
                             .setFilter(new FilterPredicate("websiteURL", FilterOperator.EQUAL, request.getParameter("websiteURL")))
-                            .addSort("likes", SortDirection.DESCENDING);
+                            .addSort("likes", SortDirection.DESCENDING)
+                            .addSort("createdAt", SortDirection.DESCENDING);
     }
     else{
        query = new Query("Comment")
@@ -75,7 +76,7 @@ public class CommentServlet extends HttpServlet {
     String comment = request.getParameter("comment");
     String websiteURL = request.getParameter("websiteURL");
     long createdAt = System.currentTimeMillis();
-    String userId = userService.getCurrentUser().getUserId();
+    String userId = userService.getCurrentUser().getEmail();
     // String userId = "test";
     // long likes = Integer.parseInt(request.getParameter("likes"));
     // long likes;
