@@ -42,6 +42,7 @@ public class LikesServlet extends HttpServlet {
 	DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
 	String userIdLike = userService.getCurrentUser().getUserId();
+    // String userIdLike = "test";
 	long postIdLike = Long.valueOf(request.getParameter("postId"));
 
 	Entity likesEntity = new Entity("Likes");
@@ -56,8 +57,10 @@ public class LikesServlet extends HttpServlet {
 		         .setFilter(new CompositeFilter(CompositeFilterOperator.AND, Arrays.asList(
      						new FilterPredicate("userId", FilterOperator.EQUAL, userIdLike),
      						new FilterPredicate("postId", FilterOperator.EQUAL, postIdLike))));
-
-	  if(queryLike!=null){
+        // System.out.println(queryLike);
+      PreparedQuery pq = datastore.prepare(queryLike);
+      Entity result = pq.asSingleEntity();
+	  if(result!=null){
 		  sameEntry = true;
 	  }
 	  else{
@@ -70,12 +73,13 @@ public class LikesServlet extends HttpServlet {
 
 	try{
 	  /** Updating likes of a comment*/	
+      System.out.println(KeyFactory.createKey("Comment", postIdLike));
 	  Entity commentEntity = datastore.get(KeyFactory.createKey("Comment", postIdLike));
 	  if(!sameEntry){
 	  	long likes = (long) commentEntity.getProperty("likes");
         commentEntity.setProperty("likes", likes + 1);
         datastore.put(commentEntity);
-        response.getWriter().println(likes);
+        response.getWriter().println(likes+1);
       }
 	}
 	catch(Exception e){

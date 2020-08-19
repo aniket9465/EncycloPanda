@@ -12,6 +12,14 @@ fetch('/comment')
 commentForm.addEventListener('submit', (event) => {
     event.preventDefault();
     comment = document.getElementById("commentBox").value;
+    websiteURL = document.getElementById("webs").value;
+    likes = document.getElementById("likes").value;
     comment = comment.trim();
     commentForm.submit();
+});
+
+likesForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+    postId=document.getElementById("postId").value;
+    likesForm.submit();
 });

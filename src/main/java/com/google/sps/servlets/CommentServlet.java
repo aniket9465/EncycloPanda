@@ -29,7 +29,7 @@ public class CommentServlet extends HttpServlet {
   /** Get all comments from datastore and sort it in descending order of time posted */
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     Query query;
-    if(request.getParameter("type")=="likes"){
+    if(request.getParameter("type")!=null){
         query = new Query("Comment")
                             .setFilter(new FilterPredicate("websiteURL", FilterOperator.EQUAL, request.getParameter("websiteURL")))
                             .addSort("likes", SortDirection.DESCENDING);
@@ -42,7 +42,6 @@ public class CommentServlet extends HttpServlet {
 
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     PreparedQuery results = datastore.prepare(query);
-
     List<Comment> comments = new ArrayList<>();
     for (Entity entity : results.asIterable()) {
 
@@ -61,6 +60,7 @@ public class CommentServlet extends HttpServlet {
 
     response.setContentType("application/json;");
     response.getWriter().println(gson.toJson(comments));
+    // System.out.println(comments);
   }
 
   @Override
@@ -76,6 +76,18 @@ public class CommentServlet extends HttpServlet {
     String websiteURL = request.getParameter("websiteURL");
     long createdAt = System.currentTimeMillis();
     String userId = userService.getCurrentUser().getUserId();
+    // String userId = "test";
+    // long likes = Integer.parseInt(request.getParameter("likes"));
+    // long likes;
+    // System.out.println(request.getParameter("comment"));
+    // System.out.println(request.getParameter("websiteURL"));
+    // System.out.println(request.getParameter("likes"));
+    // try {
+    //   likes = Integer.parseInt(request.getParameter("likes"));
+    // } catch (NumberFormatException e) {
+    //   System.err.println("Could not convert to int: " + request.getParameter("likes"));
+    //   return;
+    // }
     Entity commentEntity = new Entity("Comment");
     commentEntity.setProperty("comment", comment);
     commentEntity.setProperty("createdAt", createdAt);
