@@ -78,6 +78,9 @@ function fetchComments(type) {
           .then((data) => {
             comments = data;
             updateComments();
+          })
+          .catch(() => {
+            showSnackbar("Network Error");
           });
         document.getElementById("mostRecentDiv").style.borderWidth = "2px";
         break;
@@ -88,6 +91,9 @@ function fetchComments(type) {
           .then((data) => {
             comments = data;
             updateComments();
+          })
+          .catch(() => {
+            showSnackbar("Network Error");
           });
         document.getElementById("mostLikedDiv").style.borderWidth = "2px";
         break;
@@ -120,6 +126,9 @@ function updateLikes(id) {
     .then((data) => {
       if (data !== "")
         document.getElementById("likeCount" + id).innerHTML = data + " likes";
+    })
+    .catch(() => {
+      showSnackbar("Network Error");
     });
 }
 
@@ -144,7 +153,13 @@ function setFooter() {
                 type: "POST",
                 url: BASE_URL + "/comment",
                 data: { comment: $("#commentBox")[0].value, websiteURL },
-              });
+              })
+                .done(() => {
+                  fetchComments(selectedFilter);
+                })
+                .fail(() => {
+                  showSnackbar("Network Error");
+                });
               $("#commentForm")[0].reset();
             });
             return false;
@@ -154,7 +169,19 @@ function setFooter() {
           data.loginUrl
         );
       }
+    })
+    .catch(() => {
+      showSnackbar("Network Error");
     });
+}
+
+function showSnackbar(message) {
+  var snackbarDiv = document.getElementById("snackbar");
+  snackbarDiv.className = "show";
+  snackbarDiv.innerHTML = message;
+  setTimeout(function () {
+    snackbarDiv.className = snackbarDiv.className.replace("show", "");
+  }, 3000);
 }
 
 // initialise the extension
