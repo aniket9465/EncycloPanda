@@ -4,18 +4,18 @@ package com.google.sps.data;
 public class Comment {
 
     private long id;
-    private long userId;
     private long likes;
     private long createdAt;
-    private String text;
-    private String websiteUrl;
+    private String userId;
+    private String comment;
+    private String websiteURL;
    
-    public Comment(long id, long userId, long likes, long createdAt, String text, String websiteUrl) {
+    public Comment(long id, long likes, long createdAt, String userId, String comment, String websiteURL) {
         this.id = id;
-        this.userId = userId;
         this.likes = likes;
         this.createdAt = createdAt;
-        this.text = text;
-        this.websiteUrl = websiteUrl;
+        this.userId = userId;
+        this.comment = comment;
+        this.websiteURL = websiteURL;
     }
 }

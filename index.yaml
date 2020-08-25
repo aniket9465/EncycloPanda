@@ -1,0 +1,21 @@
+indexes:
+    
+- kind: Comment
+  properties:
+  - name: websiteURL
+  - name: createdAt
+    direction: desc
+
+- kind: Comment
+  properties:
+  - name: websiteURL
+  - name: likes
+    direction: desc
+  - name: createdAt
+    direction: desc
+
+- kind: Likes
+  properties:
+  - name: userId
+  - name: postId
+    

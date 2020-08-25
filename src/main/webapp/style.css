@@ -1,0 +1,51 @@
+.light-grey{
+    background-color:#f1f1f1
+}
+.content{
+    margin-left:auto;
+    margin-right:auto;
+}
+.container{
+    padding:0.01em 16px
+}
+.center{
+    text-align:center
+}
+.col{
+    float:left;width:100%
+}
+.col.l9{
+    width:74.99999%
+}
+.col.l3{
+    width:24.99999%
+}
+.card{
+    box-shadow:0 2px 5px 0 rgba(0,0,0,0.16),0 2px 10px 0 rgba(0,0,0,0.12)
+}
+.margin{
+    margin:16px
+}
+.white{
+    color:#000;
+    background-color:#fff
+}
+.ul{
+    list-style-type:none;
+    padding:0;margin:0
+}
+.ul li{
+    padding:8px 16px;
+    border-bottom:1px solid #ddd
+}
+.ul li:last-child{
+    border-bottom:none
+}
+a{
+    color:inherit
+}
+h1,h2,h3,h4,h5,h6{
+    font-weight:400;
+    margin:10px 0;
+    font-family: "Raleway", sans-serif
+}
