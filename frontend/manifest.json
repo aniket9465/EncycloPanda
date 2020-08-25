@@ -14,5 +14,5 @@
     "default_popup": "popup.html"
   },
   "content_security_policy": "script-src 'self' https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js",
-  "permissions": ["activeTab"]
+  "permissions": ["activeTab", "https://summer20-sps-90.df.r.appspot.com/*"]
 }

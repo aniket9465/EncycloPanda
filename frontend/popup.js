@@ -1,5 +1,5 @@
 // Constants
-const BASE_URL = "http://localhost:3000";
+const BASE_URL = "https://summer20-sps-90.df.r.appspot.com";
 
 // HTML components
 
@@ -21,24 +21,37 @@ const getLoginButton = (loginUrl) => `
 
 const getCommentCard = ({
   id,
-  username = "",
-  time = "",
-  commentText = "",
-  likeCount = 0,
+  userId = "",
+  createdAt = "",
+  comment = "",
+  likes = 0,
 }) => {
+  createdAt = new Date(createdAt);
+  let time =
+    createdAt.getDate() +
+    "/" +
+    (createdAt.getMonth() + 1) +
+    "/" +
+    createdAt.getFullYear() +
+    " " +
+    createdAt.getHours() +
+    ":" +
+    createdAt.getMinutes();
   return `<div class="card">
     <div class="cardHeader">
-      <p class="username">${username}</p>
+      <p class="username">${userId}</p>
       <p class="date">${time}</p>
     </div>
     <div class="cardContent">
-      <p class="cardText">${commentText
+      <p class="cardText">${comment
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;")}</p>
     </div>
     <div class="cardFooter">
-      <img src="images/likeButton.png" class="likeButton" onclick="updateLikes(${id})" />
-      <p class="likesText" id="${"likeCount" + id}">${likeCount} likes</p>
+      <img src="images/likeButton.png" id="${
+        "likeButton" + id
+      }" class="likeButton" />
+      <p class="likesText" id="${"likeCount" + id}">${likes} likes</p>
     </div>
   </div>`;
 };
@@ -50,30 +63,42 @@ var comments = [];
 // state updating functions
 
 function fetchComments(type) {
-  document.getElementById("mostRecentDiv").style.borderWidth = 0;
-  document.getElementById("mostLikedDiv").style.borderWidth = 0;
-  switch (type) {
-    case "mostRecent":
-      selectedFilter = "mostRecent";
-      fetch(BASE_URL + "/comments/?filter=mostRecent")
-        .then((response) => response.json())
-        .then((data) => {
-          comments = data;
-          updateComments();
-        });
-      document.getElementById("mostRecentDiv").style.borderWidth = "2px";
-      break;
-    case "mostLiked":
-      selectedFilter = "mostLiked";
-      fetch(BASE_URL + "/comments/?filter=mostLiked")
-        .then((response) => response.json())
-        .then((data) => {
-          comments = data;
-          updateComments();
-        });
-      document.getElementById("mostLikedDiv").style.borderWidth = "2px";
-      break;
-  }
+  let websiteURL = "";
+  chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+    let tab = tabs[0];
+    let url = new URL(tab.url);
+    websiteURL = url.hostname;
+    document.getElementById("mostRecentDiv").style.borderWidth = 0;
+    document.getElementById("mostLikedDiv").style.borderWidth = 0;
+    switch (type) {
+      case "mostRecent":
+        selectedFilter = "mostRecent";
+        fetch(BASE_URL + "/comment?type=recent" + "&websiteURL=" + websiteURL)
+          .then((response) => response.json())
+          .then((data) => {
+            comments = data;
+            updateComments();
+          })
+          .catch(() => {
+            showSnackbar("Network Error");
+          });
+        document.getElementById("mostRecentDiv").style.borderWidth = "2px";
+        break;
+      case "mostLiked":
+        selectedFilter = "mostLiked";
+        fetch(BASE_URL + "/comment?type=likes" + "&websiteURL=" + websiteURL)
+          .then((response) => response.json())
+          .then((data) => {
+            comments = data;
+            updateComments();
+          })
+          .catch(() => {
+            showSnackbar("Network Error");
+          });
+        document.getElementById("mostLikedDiv").style.borderWidth = "2px";
+        break;
+    }
+  });
 }
 
 function updateComments() {
@@ -83,32 +108,60 @@ function updateComments() {
       return getCommentCard(obj);
     })
     .join("");
+  comments.forEach((obj) => {
+    document
+      .getElementById("likeButton" + obj.id)
+      .addEventListener("click", (e) => {
+        updateLikes(obj.id);
+      });
+  });
 }
 
 function updateLikes(id) {
-  fetch(BASE_URL + "/like/?id=" + id)
-    .then((response) => response.json())
+  console.log(id);
+  fetch(BASE_URL + "/likes?postId=" + id, {
+    method: "POST",
+  })
+    .then((response) => response.text())
     .then((data) => {
-      console.log(document.getElementById("likeCount" + id)); // set its inner html to new number of likes
+      if (data !== "")
+        document.getElementById("likeCount" + id).innerHTML = data + " likes";
+    })
+    .catch(() => {
+      showSnackbar("Network Error");
     });
 }
 
 function setFooter() {
-  fetch(BASE_URL + "/auth")
+  fetch(BASE_URL + "/authentication")
     .then((response) => response.json())
     .then((data) => {
-      if (data.isLoggedIn) {
+      if (data.LoginStatus) {
         document.getElementById("footer").innerHTML = commentForm;
         document
           .getElementById("submitButton")
           .addEventListener("click", (e) => {
             e.preventDefault();
-            $.ajax({
-              type: "POST",
-              url: BASE_URL + "/comment",
-              data: $("#commentForm").serialize(),
+            let websiteURL = "";
+            chrome.tabs.query({ active: true, currentWindow: true }, function (
+              tabs
+            ) {
+              let tab = tabs[0];
+              let url = new URL(tab.url);
+              let websiteURL = url.hostname;
+              $.ajax({
+                type: "POST",
+                url: BASE_URL + "/comment",
+                data: { comment: $("#commentBox")[0].value, websiteURL },
+              })
+                .done(() => {
+                  fetchComments(selectedFilter);
+                })
+                .fail(() => {
+                  showSnackbar("Network Error");
+                });
+              $("#commentForm")[0].reset();
             });
-            $("#commentForm")[0].reset();
             return false;
           });
       } else {
@@ -116,7 +169,19 @@ function setFooter() {
           data.loginUrl
         );
       }
+    })
+    .catch(() => {
+      showSnackbar("Network Error");
     });
+}
+
+function showSnackbar(message) {
+  var snackbarDiv = document.getElementById("snackbar");
+  snackbarDiv.className = "show";
+  snackbarDiv.innerHTML = message;
+  setTimeout(function () {
+    snackbarDiv.className = snackbarDiv.className.replace("show", "");
+  }, 3000);
 }
 
 // initialise the extension
